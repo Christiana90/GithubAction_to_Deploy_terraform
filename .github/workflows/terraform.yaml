@@ -1,0 +1,41 @@
+name: "Terraform"
+
+on:
+    push:
+        branches:
+            - main
+
+jobs:
+    terraform:
+        name: "Terraform"
+        runs-on: ubuntu-latest
+
+        env:
+            AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
+            AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+        defaults:
+            run:
+                working-directory: src #to tell were they action will begin.
+        
+        steps:
+            - name: Checkout #copy or clone the file from local into gitserver
+              uses: actions/checkout@v3 #copy repo into the ubuntu latest so you have terminak to excute the terraform command
+
+            - name: Setup Terraform #install terraform
+              uses: hashicorp/setup-terraform@v1
+              with:
+                  terraform_version: 1.0.1
+                  terraform_wrapper: false
+
+            - name: Terraform Init
+              id: init
+              run: terraform init
+
+            - name: Terraform Plan
+              id: plan
+              run: terraform plan
+
+            - name: Terraform Apply
+              run: terraform apply -auto-approve
+
+        
